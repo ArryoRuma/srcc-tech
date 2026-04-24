@@ -52,6 +52,23 @@ Installed four new Shure SLX-D wireless handheld microphones in the sanctuary.
 
 ---
 
+## Resource drop zone
+
+Use `resources/` to paste SOPs, reference files, diagrams, and other operational docs.
+
+- `resources/sops/`
+- `resources/runbooks/`
+- `resources/references/`
+- `resources/vendor-docs/`
+- `resources/diagrams/`
+- `resources/templates/`
+- `resources/handoff/`
+- `resources/archive/`
+
+See `resources/README.md` for naming and organization guidance.
+
+---
+
 ## Setup
 
 ```bash

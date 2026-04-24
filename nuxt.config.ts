@@ -22,7 +22,9 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/': { prerender: true },
-    '/updates': { prerender: true }
+    '/updates': { prerender: true },
+    '/resources': { prerender: true },
+    '/resources/**': { prerender: true }
   },
 
   compatibilityDate: '2025-01-15',

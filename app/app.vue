@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui'
+
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -14,6 +16,67 @@ useHead({
 const title = 'SRCC Tech'
 const description = 'A running log of technology updates, A/V changes, and infrastructure improvements at SRCC.'
 
+const route = useRoute()
+
+const navigationItems = computed<NavigationMenuItem[]>(() => [{
+  label: 'Home',
+  icon: 'i-lucide-house',
+  to: '/'
+}, {
+  label: 'Updates',
+  icon: 'i-lucide-scroll-text',
+  to: '/updates'
+}, {
+  label: 'Resources',
+  icon: 'i-lucide-folder-tree',
+  to: '/resources'
+}])
+
+const utilityItems = computed(() => {
+  if (route.path === '/updates') {
+    return [{
+      label: 'Resources',
+      icon: 'i-lucide-folder-tree',
+      trailing: true,
+      variant: 'subtle' as const,
+      color: 'neutral' as const,
+      to: '/resources'
+    }]
+  }
+
+  if (route.path === '/resources') {
+    return [{
+      label: 'View archive',
+      icon: 'i-lucide-scroll-text',
+      trailing: true,
+      variant: 'subtle' as const,
+      color: 'neutral' as const,
+      to: '/updates'
+    }]
+  }
+
+  return [{
+    label: 'Resources',
+    icon: 'i-lucide-folder-tree',
+    trailing: true,
+    variant: 'subtle' as const,
+    color: 'neutral' as const,
+    to: '/resources'
+  }]
+})
+
+const routeLabel = computed(() => {
+  if (route.path === '/updates') {
+    return 'Update archive'
+  }
+
+  if (route.path === '/resources') {
+    return 'Operations library'
+  }
+
+  return 'Tech changelog'
+})
+
 useSeoMeta({
   title,
   description,
@@ -25,52 +88,77 @@ useSeoMeta({
 
 <template>
   <UApp>
-    <div class="min-h-screen xl:grid xl:grid-cols-2">
-      <UPageSection
-        title="SRCC Tech"
-        description="A running log of technology updates, A/V changes, and infrastructure improvements at Stone Ridge Community Church."
-        orientation="vertical"
-        :links="[{
-          label: 'All Updates',
-          icon: 'i-lucide-list',
-          variant: 'ghost',
-          size: 'md',
-          to: '/updates'
-        }, {
-          label: 'Home',
-          icon: 'i-lucide-house',
-          variant: 'ghost',
-          size: 'md',
-          to: '/'
-        }]"
-        :ui="{
-          root: 'border-b border-default xl:border-b-0 xl:sticky xl:inset-y-0 xl:h-screen overflow-hidden',
-          container: 'h-full items-center justify-center',
-          wrapper: 'flex flex-col',
-          headline: 'mb-6',
-          title: 'text-left text-4xl',
-          description: 'text-left max-w-lg',
-          links: 'gap-1 justify-start -ms-2.5'
-        }"
-      >
-        <template #top>
-          <SkyBg />
+    <div class="app-shell min-h-screen">
+      <div class="site-backdrop pointer-events-none fixed inset-0 -z-20 overflow-hidden" />
+      <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <SkyBg
+          :star-count="72"
+          color="color-mix(in srgb, var(--ui-primary) 48%, white)"
+          speed="slow"
+        />
 
-          <div class="absolute -right-1/2 z-[-1] rounded-full bg-primary blur-[300px] size-60 sm:size-100 transform -translate-y-1/2 top-1/2" />
+        <div class="absolute left-[10%] top-12 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+        <div class="absolute right-[8%] top-1/3 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+      </div>
+
+      <UHeader class="surface-backdrop border-b border-default">
+        <template #title>
+          <NuxtLink
+            to="/"
+            class="flex items-center gap-3"
+          >
+            <AppLogo class="h-8 w-auto shrink-0" />
+            <span class="eyebrow-label hidden text-dimmed md:inline-block">
+              {{ routeLabel }}
+            </span>
+          </NuxtLink>
         </template>
 
-        <template #headline>
-          <AppLogo class="w-auto h-6 shrink-0 text-highlighted" />
+        <UNavigationMenu
+          :items="navigationItems"
+          class="hidden md:flex"
+        />
+
+        <template #right>
+          <UButton
+            v-for="item in utilityItems"
+            :key="item.to"
+            v-bind="item"
+            class="hidden sm:inline-flex"
+          />
+          <UColorModeButton />
         </template>
 
-        <template #default />
-      </UPageSection>
+        <template #body>
+          <div class="space-y-4 px-1 pb-4 md:hidden">
+            <UNavigationMenu
+              :items="navigationItems"
+              orientation="vertical"
+              class="-mx-2.5"
+            />
 
-      <section class="px-4 sm:px-6 xl:px-0 xl:-ms-30 xl:flex-1">
-        <UColorModeButton class="fixed top-4 right-4 z-10" />
+            <div class="dashboard-chip rounded-2xl p-3">
+              <p class="eyebrow-label mb-2 text-dimmed">
+                Quick access
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <UButton
+                  v-for="item in utilityItems"
+                  :key="`${item.to}-mobile`"
+                  v-bind="item"
+                  size="sm"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+      </UHeader>
 
-        <NuxtPage />
-      </section>
+      <UMain>
+        <div class="mx-auto w-full max-w-7xl px-4 pb-16 pt-8 sm:px-6 lg:px-8 lg:pb-24 lg:pt-10">
+          <NuxtPage />
+        </div>
+      </UMain>
     </div>
   </UApp>
 </template>

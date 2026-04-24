@@ -8,9 +8,13 @@ export default defineContentConfig({
       schema: z.object({
         title: z.string(),
         date: z.string(),
-        tag: z.string().optional(),
+        tags: z.array(z.string()).optional(),
         category: z.string().optional(),
-        published: z.boolean().default(true)
+        published: z.boolean().default(true),
+        relatedFiles: z.array(z.object({
+          section: z.string(),
+          name: z.string()
+        })).optional()
       })
     })
   }
