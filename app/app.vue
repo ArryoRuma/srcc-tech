@@ -11,15 +11,14 @@ useHead({
   }
 })
 
-const title = 'Nuxt Changelog Template'
-const description = 'Display GitHub release notes as a beautiful changelog for any repository with this Nuxt UI template.'
+const title = 'SRCC Tech'
+const description = 'A running log of technology updates, A/V changes, and infrastructure improvements at SRCC.'
 
 useSeoMeta({
   title,
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/changelog-light.png',
   twitterCard: 'summary_large_image'
 })
 </script>
@@ -28,23 +27,21 @@ useSeoMeta({
   <UApp>
     <div class="min-h-screen xl:grid xl:grid-cols-2">
       <UPageSection
-        title="Changelog"
-        description="Display GitHub release notes as a beautiful changelog for any repository with this Nuxt UI template."
+        title="SRCC Tech"
+        description="A running log of technology updates, A/V changes, and infrastructure improvements at Stone Ridge Community Church."
         orientation="vertical"
         :links="[{
-          label: 'Documentation',
-          icon: 'i-lucide-book-open',
+          label: 'All Updates',
+          icon: 'i-lucide-list',
           variant: 'ghost',
           size: 'md',
-          to: 'https://ui.nuxt.com/getting-started/installation/nuxt',
-          target: '_blank'
+          to: '/updates'
         }, {
-          label: 'GitHub',
-          icon: 'i-simple-icons-github',
+          label: 'Home',
+          icon: 'i-lucide-house',
           variant: 'ghost',
           size: 'md',
-          to: 'https://github.com/nuxt-ui-templates/changelog',
-          target: '_blank'
+          to: '/'
         }]"
         :ui="{
           root: 'border-b border-default xl:border-b-0 xl:sticky xl:inset-y-0 xl:h-screen overflow-hidden',

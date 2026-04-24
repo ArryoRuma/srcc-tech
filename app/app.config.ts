@@ -1,5 +1,4 @@
 export default defineAppConfig({
-  repository: 'nuxt/ui',
   ui: {
     colors: {
       primary: 'green',
