@@ -107,7 +107,7 @@ useSeoMeta({
             to="/"
             class="flex items-center gap-3"
           >
-            <AppLogo class="h-8 w-auto shrink-0" />
+            <AppLogo class="h-6 w-auto shrink-0 text-highlighted" />
             <span class="eyebrow-label hidden text-dimmed md:inline-block">
               {{ routeLabel }}
             </span>
