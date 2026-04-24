@@ -157,6 +157,7 @@ const files = computed(() => data.value?.files ?? [])
         <ResourceFileCard
           v-for="file in files"
           :key="file.relativePath"
+          :section="section"
           v-bind="file"
         />
       </div>

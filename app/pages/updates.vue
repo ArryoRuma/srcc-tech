@@ -44,8 +44,7 @@ const toggleCategory = (cat: string) => {
   const idx = selectedCategories.value.indexOf(cat)
   if (idx === -1) {
     selectedCategories.value = [...selectedCategories.value, cat]
-  }
-  else {
+  } else {
     selectedCategories.value = selectedCategories.value.filter(c => c !== cat)
   }
 }
