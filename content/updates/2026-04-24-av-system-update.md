@@ -1,10 +1,12 @@
 ---
 title: AV System Update
 date: 2026-04-24
-category: Audio
-tags: [Aviom, GEQ, Room Tuning, IEM, RF]
-published: true
+category: audio
+tags: [aviom, geq, room-tuning, iem, rf]
+published: false
 ---
+
+_Superseded by granular topic entries published on the same date._
 
 ### Aviom – Stereo Channels
 

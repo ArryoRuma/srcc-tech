@@ -1,10 +1,12 @@
 ---
 title: AV System Update
 date: 2026-04-10
-category: Audio
-tags: [Aviom, Mixing, Piano, IEM, Monitoring]
-published: true
+category: audio
+tags: [aviom, mixing, piano, iem, monitoring]
+published: false
 ---
+
+_Superseded by granular topic entries published on the same date._
 
 ### Antennas
 

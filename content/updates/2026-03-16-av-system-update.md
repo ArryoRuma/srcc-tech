@@ -1,13 +1,15 @@
 ---
 title: AV System Update
 date: 2026-03-16
-category: Audio
-tags: [RF, Antennas, Frequencies, Microphones, Power]
-published: true
+category: audio
+tags: [rf, antenna, frequencies, microphones, power]
+published: false
 relatedFiles:
   - section: diagrams
     name: Antenna Diagramming.pdf
 ---
+
+_Superseded by granular topic entries published on the same date._
 
 ### RF / Antenna System
 

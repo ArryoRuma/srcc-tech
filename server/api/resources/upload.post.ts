@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   let baseName = customName || originalName
 
   // Strip dangerous characters
-  baseName = baseName.replace(/[^\w\s.\-]/g, '').trim()
+  baseName = baseName.replace(/[^\w\s.-]/g, '').trim()
 
   if (!baseName) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid filename' })

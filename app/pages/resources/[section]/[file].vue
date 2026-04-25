@@ -204,15 +204,16 @@ useSeoMeta({
         v-if="isMarkdown"
         class="hero-panel rounded-[2rem] p-6 sm:p-8 lg:p-10"
       >
-        <div class="prose prose-neutral dark:prose-invert max-w-none
-          prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-highlighted
-          prose-p:text-muted prose-p:leading-7
-          prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-          prose-code:font-mono prose-code:text-sm prose-code:text-highlighted
-          prose-pre:bg-elevated prose-pre:rounded-xl
-          prose-blockquote:border-primary prose-blockquote:text-muted
-          prose-strong:text-highlighted
-          prose-hr:border-default"
+        <div
+          class="prose prose-neutral dark:prose-invert max-w-none
+            prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-highlighted
+            prose-p:text-muted prose-p:leading-7
+            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+            prose-code:font-mono prose-code:text-sm prose-code:text-highlighted
+            prose-pre:bg-elevated prose-pre:rounded-xl
+            prose-blockquote:border-primary prose-blockquote:text-muted
+            prose-strong:text-highlighted
+            prose-hr:border-default"
         >
           <MDC :value="markdownContent" />
         </div>

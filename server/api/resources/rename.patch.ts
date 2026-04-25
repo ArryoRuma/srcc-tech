@@ -16,7 +16,7 @@ const allowedExtensions = new Set(['.md', '.pdf', '.docx', '.xlsx', '.png', '.jp
 const validateFilename = (name: string) => {
   if (!name) return false
   if (name.includes('..') || name.includes('/') || name.includes('\\')) return false
-  if (!/^[\w\s.\-]+$/.test(name)) return false
+  if (!/^[\w\s.-]+$/.test(name)) return false
   return true
 }
 

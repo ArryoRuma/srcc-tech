@@ -1,5 +1,6 @@
 import { writeFile, mkdir } from 'fs/promises'
 import { resolve } from 'path'
+import { normalizeCategory, normalizeTags } from '~~/utils/updateTaxonomy'
 
 const UPDATES_DIR = 'content/updates'
 
@@ -34,6 +35,22 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing or invalid date (expected YYYY-MM-DD)' })
   }
 
+  const categoryResult = normalizeCategory(typeof category === 'string' ? category : undefined)
+  if (categoryResult.unknown) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Unknown category: ${categoryResult.unknown}`
+    })
+  }
+
+  const normalizedTags = normalizeTags(Array.isArray(tags) ? tags : undefined)
+  if (normalizedTags.unknown.length > 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `Unknown tags: ${normalizedTags.unknown.join(', ')}`
+    })
+  }
+
   // Build filename
   const slug = slugify(title)
   const filename = `${date}-${slug}.md`
@@ -50,21 +67,21 @@ export default defineEventHandler(async (event) => {
   }
 
   // Build YAML frontmatter
-  const tagsList = Array.isArray(tags) && tags.length > 0
-    ? `[${tags.map((t: string) => t.trim()).join(', ')}]`
+  const tagsList = normalizedTags.values.length > 0
+    ? JSON.stringify(normalizedTags.values)
     : null
 
   const relatedFilesList = Array.isArray(relatedFiles) && relatedFiles.length > 0
     ? '\nrelatedFiles:\n' + relatedFiles.map((f: { section: string, name: string }) =>
-        `  - section: ${f.section}\n    name: ${f.name}`
-      ).join('\n')
+      `  - section: ${f.section}\n    name: ${f.name}`
+    ).join('\n')
     : ''
 
   const frontmatter = [
     '---',
     `title: ${title}`,
     `date: ${date}`,
-    ...(category ? [`category: ${category}`] : []),
+    ...(categoryResult.value ? [`category: ${categoryResult.value}`] : []),
     ...(tagsList ? [`tags: ${tagsList}`] : []),
     `published: ${published !== false}`,
     ...(relatedFilesList ? [relatedFilesList.trimStart()] : []),

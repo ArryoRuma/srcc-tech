@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import {
+  categoryLabel,
+  normalizeCategory,
+  normalizeSearchQuery,
+  normalizeTags,
+  tagLabel
+} from '~~/utils/updateTaxonomy'
+
 interface ResourceFile {
   name: string
   relativePath: string
@@ -19,6 +27,7 @@ interface ResourceListResponse {
 
 const search = ref('')
 const selectedCategories = ref<string[]>([])
+const selectedTags = ref<string[]>([])
 
 const { data: updates } = await useAsyncData('all-updates', () =>
   queryCollection('updates')
@@ -34,11 +43,59 @@ const { data: resourceData } = await useFetch<ResourceListResponse>('/api/resour
 
 const allUpdates = computed(() => updates.value ?? [])
 
+function extractText(value: unknown): string {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (Array.isArray(value)) {
+    return value.map(entry => extractText(entry)).join(' ')
+  }
+  if (typeof value === 'object') {
+    return Object.values(value as Record<string, unknown>)
+      .map(entry => extractText(entry))
+      .join(' ')
+  }
+  return ''
+}
+
+const searchableUpdates = computed(() => allUpdates.value.map((item) => {
+  const rawCategory = typeof item.category === 'string' ? item.category : undefined
+  const rawTags = Array.isArray(item.tags)
+    ? item.tags.filter((tag): tag is string => typeof tag === 'string')
+    : undefined
+
+  const normalizedCategory = normalizeCategory(rawCategory).value
+  const normalizedTags = normalizeTags(rawTags).values
+  const bodyText = extractText(item.body)
+
+  const searchableText = [
+    item.title,
+    normalizedCategory,
+    ...normalizedTags,
+    bodyText
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+  return {
+    item,
+    normalizedCategory,
+    normalizedTags,
+    searchableText
+  }
+}))
+
 const categories = computed<string[]>(() => [
-  ...new Set(allUpdates.value
-    .map(item => item.category)
-    .filter((category): category is string => Boolean(category)))
-])
+  ...new Set(searchableUpdates.value
+    .map(item => item.normalizedCategory)
+    .filter(Boolean))
+] as string[])
+
+const tags = computed<string[]>(() => [
+  ...new Set(searchableUpdates.value
+    .flatMap(item => item.normalizedTags)
+    .filter(Boolean))
+] as string[])
 
 const toggleCategory = (cat: string) => {
   const idx = selectedCategories.value.indexOf(cat)
@@ -49,29 +106,35 @@ const toggleCategory = (cat: string) => {
   }
 }
 
+const toggleTag = (tag: string) => {
+  const idx = selectedTags.value.indexOf(tag)
+  if (idx === -1) {
+    selectedTags.value = [...selectedTags.value, tag]
+  } else {
+    selectedTags.value = selectedTags.value.filter(t => t !== tag)
+  }
+}
+
 const filteredUpdates = computed(() => {
-  const query = search.value.trim().toLowerCase()
+  const query = normalizeSearchQuery(search.value)
 
-  return allUpdates.value.filter((item) => {
+  return searchableUpdates.value.filter(({ normalizedCategory, normalizedTags, searchableText }) => {
     const matchesCategory = selectedCategories.value.length === 0
-      || selectedCategories.value.includes(item.category ?? '')
-    const haystack = [item.title, ...(item.tags ?? []), item.category]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
-    const matchesQuery = !query || haystack.includes(query)
+      || (normalizedCategory ? selectedCategories.value.includes(normalizedCategory) : false)
+    const matchesTag = selectedTags.value.length === 0
+      || normalizedTags.some(tag => selectedTags.value.includes(tag))
+    const matchesQuery = !query || searchableText.includes(query)
 
-    return matchesCategory && matchesQuery
-  })
+    return matchesCategory && matchesTag && matchesQuery
+  }).map(result => result.item)
 })
 
 const summaryCards = computed(() => {
   const latest = allUpdates.value[0]
   const activeLabel = selectedCategories.value.length === 0
+    && selectedTags.value.length === 0
     ? 'All'
-    : selectedCategories.value.length === 1
-      ? selectedCategories.value[0]
-      : `${selectedCategories.value.length} active`
+    : `${selectedCategories.value.length + selectedTags.value.length} active`
 
   return [{
     label: 'Published entries',
@@ -152,21 +215,29 @@ const formatDate = (date: string) =>
 
         <div class="flex flex-wrap items-center gap-2">
           <UButton
-            v-if="selectedCategories.length > 0"
+            v-if="selectedCategories.length > 0 || selectedTags.length > 0"
             label="Clear"
             icon="i-lucide-x"
             variant="subtle"
             color="neutral"
             size="sm"
-            @click="selectedCategories = []"
+            @click="selectedCategories = []; selectedTags = []"
           />
           <UButton
             v-for="category in categories"
             :key="category"
-            :label="category"
+            :label="categoryLabel(category)"
             :variant="selectedCategories.includes(category) ? 'solid' : 'subtle'"
             :color="selectedCategories.includes(category) ? 'primary' : 'neutral'"
             @click="toggleCategory(category)"
+          />
+          <UButton
+            v-for="tag in tags"
+            :key="tag"
+            :label="tagLabel(tag)"
+            :variant="selectedTags.includes(tag) ? 'solid' : 'subtle'"
+            :color="selectedTags.includes(tag) ? 'primary' : 'neutral'"
+            @click="toggleTag(tag)"
           />
         </div>
       </div>
@@ -203,14 +274,14 @@ const formatDate = (date: string) =>
             <div class="flex flex-wrap gap-2">
               <UBadge
                 v-if="item.category"
-                :label="item.category"
+                :label="categoryLabel(normalizeCategory(item.category).value ?? item.category)"
                 variant="soft"
                 size="sm"
               />
               <UBadge
                 v-for="tag in (item.tags ?? [])"
                 :key="tag"
-                :label="tag"
+                :label="tagLabel(tag)"
                 variant="subtle"
                 color="neutral"
                 size="sm"

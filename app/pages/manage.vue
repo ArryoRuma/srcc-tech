@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import {
+  UPDATE_CATEGORIES,
+  UPDATE_TAGS,
+  type UpdateCategory,
+  type UpdateTag,
+  categoryLabel,
+  tagLabel
+} from '~~/utils/updateTaxonomy'
 
 const toast = useToast()
 
@@ -185,8 +193,8 @@ async function confirmRename() {
 const updateSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
-  category: z.string().optional(),
-  tags: z.string().optional(),
+  category: z.enum(UPDATE_CATEGORIES).optional(),
+  tags: z.array(z.enum(UPDATE_TAGS)).optional(),
   published: z.boolean(),
   body: z.string().min(1, 'Body content is required')
 })
@@ -198,11 +206,21 @@ const today = new Date().toISOString().slice(0, 10)
 const updateState = reactive<Partial<UpdateSchema>>({
   title: '',
   date: today,
-  category: '',
-  tags: '',
+  category: undefined,
+  tags: [],
   published: true,
   body: ''
 })
+
+const updateCategoryOptions = UPDATE_CATEGORIES.map((category: UpdateCategory) => ({
+  label: categoryLabel(category),
+  value: category
+}))
+
+const updateTagOptions = UPDATE_TAGS.map((tag: UpdateTag) => ({
+  label: tagLabel(tag),
+  value: tag
+}))
 
 interface RelatedFile {
   section: string
@@ -224,17 +242,13 @@ const submittingUpdate = ref(false)
 async function onUpdateSubmit(event: FormSubmitEvent<UpdateSchema>) {
   submittingUpdate.value = true
   try {
-      const parsedTags = event.data.tags
-      ? event.data.tags.split(',').map((t: string) => t.trim()).filter(Boolean)
-      : []
-
     const result = await $fetch('/api/updates/create', {
       method: 'POST',
       body: {
         title: event.data.title,
         date: event.data.date,
         category: event.data.category || undefined,
-        tags: parsedTags,
+        tags: event.data.tags ?? [],
         published: event.data.published,
         relatedFiles: relatedFiles.value.filter(f => f.name.trim()),
         body: event.data.body
@@ -251,8 +265,8 @@ async function onUpdateSubmit(event: FormSubmitEvent<UpdateSchema>) {
     Object.assign(updateState, {
       title: '',
       date: today,
-      category: '',
-      tags: '',
+      category: undefined,
+      tags: [],
       published: true,
       body: ''
     })
@@ -559,9 +573,12 @@ useSeoMeta({
                   label="Category"
                   hint="Optional"
                 >
-                  <UInput
+                  <USelect
                     v-model="updateState.category"
-                    placeholder="e.g. Audio, Video, Networking"
+                    :items="updateCategoryOptions"
+                    value-key="value"
+                    label-key="label"
+                    placeholder="Choose category"
                     class="w-full"
                   />
                 </UFormField>
@@ -569,13 +586,18 @@ useSeoMeta({
                 <UFormField
                   name="tags"
                   label="Tags"
-                  description="Comma-separated list of tags"
+                  description="Select one or more tags"
                   hint="Optional"
                   class="sm:col-span-2"
                 >
-                  <UInput
+                  <USelectMenu
                     v-model="updateState.tags"
-                    placeholder="e.g. Aviom, GEQ, Room Tuning"
+                    :items="updateTagOptions"
+                    value-key="value"
+                    label-key="label"
+                    placeholder="Choose tags"
+                    multiple
+                    searchable
                     class="w-full"
                   />
                 </UFormField>
@@ -665,7 +687,7 @@ useSeoMeta({
                   label="Clear"
                   color="neutral"
                   variant="ghost"
-                  @click="Object.assign(updateState, { title: '', date: today, category: '', tags: '', published: true, body: '' }); relatedFiles = []"
+                  @click="Object.assign(updateState, { title: '', date: today, category: undefined, tags: [], published: true, body: '' }); relatedFiles = []"
                 />
                 <UButton
                   type="submit"
