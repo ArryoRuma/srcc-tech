@@ -77,6 +77,13 @@ const downloadUrl = computed(() =>
   `/api/resources/download?section=${encodeURIComponent(section)}&name=${encodeURIComponent(fileName)}`
 )
 
+const viewUrl = computed(() =>
+  `/api/resources/view?section=${encodeURIComponent(section)}&name=${encodeURIComponent(fileName)}`
+)
+
+const isPdf = computed(() => metadata.value?.extension === '.pdf')
+const isImage = computed(() => ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'].includes(metadata.value?.extension ?? ''))
+
 const fileTypeInfo = computed(() => {
   const ext = metadata.value?.extension ?? ''
   return nonTextExtensionLabels[ext] ?? { label: `${ext.replace('.', '').toUpperCase() || 'Unknown'} file`, icon: 'i-lucide-file' }
@@ -211,7 +218,32 @@ useSeoMeta({
         </div>
       </section>
 
-      <!-- Non-text / binary file card -->
+      <!-- PDF inline viewer -->
+      <section
+        v-else-if="isPdf"
+        class="hero-panel overflow-hidden rounded-[2rem]"
+      >
+        <iframe
+          :src="viewUrl"
+          class="h-[80vh] min-h-[480px] w-full border-0"
+          title="PDF preview"
+          sandbox="allow-scripts allow-same-origin"
+        />
+      </section>
+
+      <!-- Image viewer -->
+      <section
+        v-else-if="isImage"
+        class="hero-panel rounded-[2rem] p-6 sm:p-8"
+      >
+        <img
+          :src="viewUrl"
+          :alt="fileName"
+          class="mx-auto max-h-[70vh] max-w-full rounded-xl object-contain"
+        >
+      </section>
+
+      <!-- Other binary file card -->
       <section
         v-else
         class="hero-panel rounded-[2rem] p-8 text-center"

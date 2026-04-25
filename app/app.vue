@@ -30,6 +30,10 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [{
   label: 'Resources',
   icon: 'i-lucide-folder-tree',
   to: '/resources'
+}, {
+  label: 'Manage',
+  icon: 'i-lucide-settings-2',
+  to: '/manage'
 }])
 
 const utilityItems = computed(() => {

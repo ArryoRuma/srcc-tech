@@ -126,10 +126,11 @@ const getSectionTotal = (sectionKey: SectionKey) => {
     </section>
 
     <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      <article
+      <NuxtLink
         v-for="item in folders"
         :key="item.key"
-        class="hero-panel rounded-[1.75rem] p-5"
+        :to="`/resources/${item.key}`"
+        class="hero-panel block rounded-[1.75rem] p-5 transition-shadow hover:shadow-[0_0_0_2px_var(--ui-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         <div class="mb-4 flex items-start justify-between gap-3">
           <UIcon
@@ -159,20 +160,16 @@ const getSectionTotal = (sectionKey: SectionKey) => {
           </p>
         </div>
 
-        <UButton
-          :to="`/resources/${item.key}`"
-          label="Open folder page"
-          icon="i-lucide-arrow-up-right"
-          trailing
-          variant="outline"
-          color="neutral"
-          block
-        />
-
-        <p class="mt-3 font-mono text-xs text-dimmed">
-          {{ item.path }}
-        </p>
-      </article>
+        <div class="flex items-center justify-between">
+          <p class="font-mono text-xs text-dimmed">
+            {{ item.path }}
+          </p>
+          <UIcon
+            name="i-lucide-arrow-up-right"
+            class="size-4 text-dimmed"
+          />
+        </div>
+      </NuxtLink>
     </section>
 
     <section class="hero-panel rounded-[2rem] p-6 sm:p-8">

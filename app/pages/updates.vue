@@ -238,6 +238,7 @@ const formatDate = (date: string) =>
                 >
                   <ResourceFileCard
                     v-if="getRelatedFile(ref.section, ref.name)"
+                    :section="ref.section"
                     v-bind="getRelatedFile(ref.section, ref.name)!"
                   />
                   <article

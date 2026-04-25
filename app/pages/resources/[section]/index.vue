@@ -77,7 +77,15 @@ const { data, pending } = await useFetch<ResourceListResponse>('/api/resources/l
   key: `resource-${section}`
 })
 
-const files = computed(() => data.value?.files ?? [])
+const allFiles = computed(() => data.value?.files ?? [])
+
+const searchQuery = ref('')
+
+const files = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return allFiles.value
+  return allFiles.value.filter(f => f.name.toLowerCase().includes(q))
+})
 </script>
 
 <template>
@@ -122,21 +130,44 @@ const files = computed(() => data.value?.files ?? [])
     </section>
 
     <section class="hero-panel rounded-[2rem] p-6 sm:p-8">
-      <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p class="eyebrow-label mb-2 text-dimmed">
-            Folder path
-          </p>
-          <p class="font-mono text-sm text-highlighted">
-            {{ current.path }}
-          </p>
+      <div class="mb-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow-label mb-2 text-dimmed">
+              Folder path
+            </p>
+            <p class="font-mono text-sm text-highlighted">
+              {{ current.path }}
+            </p>
+          </div>
+
+          <UBadge
+            :label="`${allFiles.length} file${allFiles.length === 1 ? '' : 's'}`"
+            variant="soft"
+            color="primary"
+          />
         </div>
 
-        <UBadge
-          :label="`${files.length} file${files.length === 1 ? '' : 's'}`"
-          variant="soft"
-          color="primary"
-        />
+        <UInput
+          v-model="searchQuery"
+          icon="i-lucide-search"
+          placeholder="Filter files…"
+          :trailing="searchQuery.length > 0"
+          class="w-full sm:max-w-xs"
+        >
+          <template
+            v-if="searchQuery.length > 0"
+            #trailing
+          >
+            <UButton
+              icon="i-lucide-x"
+              color="neutral"
+              variant="link"
+              size="sm"
+              @click="searchQuery = ''"
+            />
+          </template>
+        </UInput>
       </div>
 
       <div
@@ -160,6 +191,22 @@ const files = computed(() => data.value?.files ?? [])
           :section="section"
           v-bind="file"
         />
+      </div>
+
+      <div
+        v-else-if="searchQuery && allFiles.length"
+        class="dashboard-chip rounded-2xl p-8 text-center"
+      >
+        <UIcon
+          name="i-lucide-search-x"
+          class="mx-auto mb-3 size-7 text-dimmed"
+        />
+        <p class="mb-1 text-base font-semibold text-highlighted">
+          No files match "{{ searchQuery }}"
+        </p>
+        <p class="text-sm text-muted">
+          Try a different search term.
+        </p>
       </div>
 
       <div
