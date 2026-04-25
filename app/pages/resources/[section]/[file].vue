@@ -227,7 +227,6 @@ useSeoMeta({
           :src="viewUrl"
           class="h-[80vh] min-h-[480px] w-full border-0"
           title="PDF preview"
-          sandbox="allow-scripts allow-same-origin"
         />
       </section>
 
