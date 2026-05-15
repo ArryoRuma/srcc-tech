@@ -1,5 +1,0 @@
-
-> nuxt-ui-template-changelog@ lint /Users/larryontruman/Desktop/Coding/srcc-tech
-> eslint .
-
- ELIFECYCLE  Command failed.
