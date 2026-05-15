@@ -19,6 +19,13 @@ export default defineNuxtConfig({
       }
     }
   },
+  vite: {
+    optimizeDeps: {
+      include: [
+        'zod',
+      ]
+    }
+  },
 
   routeRules: import.meta.dev
     ? {}

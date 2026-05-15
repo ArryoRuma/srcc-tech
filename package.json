@@ -23,6 +23,7 @@
     "@iconify-json/lucide": "^1.2.107",
     "@iconify-json/simple-icons": "^1.2.82",
     "@nuxt/content": "^3.13.0",
+    "@nuxt/eslint": "^1.15.2",
     "@nuxt/ui": "^4.7.1",
     "@nuxtjs/mdc": "0.21.1",
     "better-sqlite3": "^12.10.0",
@@ -33,7 +34,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^1.15.2",
     "@types/node": "^25.8.0",
     "eslint": "^10.3.0",
     "typescript": "^6.0.3",

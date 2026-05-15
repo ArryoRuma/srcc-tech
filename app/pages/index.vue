@@ -84,10 +84,10 @@ const getSectionTotal = (key: string) => {
             </p>
             <div class="max-w-2xl space-y-4">
               <h1 class="text-4xl font-semibold tracking-tight text-highlighted sm:text-5xl lg:text-6xl">
-                A cleaner home for infrastructure updates and future file drop-offs.
+                Everything all in one place.
               </h1>
               <p class="max-w-xl text-base leading-7 text-muted sm:text-lg">
-                Browse the running log, jump into the timeline quickly, and keep space ready for the supporting files that usually trail behind technical changes.
+                See what's changed, user manuals, and other technical documentation all in one place.
               </p>
             </div>
           </div>
